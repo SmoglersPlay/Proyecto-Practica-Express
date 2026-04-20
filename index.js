@@ -8,6 +8,7 @@ app.get('/', (req, res) => {
   res.send('API funcionando');
 });
 
+
 app.get('/alumnos', async (req, res) => {
   try {
     const resultado = await pool.query('SELECT * FROM alumno');
@@ -37,6 +38,43 @@ app.post('/alumnos', async (req, res) => {
     res.status(500).json({ error: 'Error al insertar el alumno' });
   }
 });
+
+app.get('/materias', async (req, res) => {
+  try {
+    const resultado = await pool.query('SELECT * FROM materia');
+    res.json(resultado.rows);
+  } catch (error) {
+    console.error('Error al consultar materias:', error);
+    res.status(500).json({ error: 'Error al obtener las materias' });
+  }
+});
+
+
+// Parte 3: Insertar una nueva materia (POST)
+app.post('/materias', async (req, res) => {
+  try {
+    const { nombre, semestre, creditos } = req.body;
+
+    // Parte 8: Validación de campos
+    if (!nombre || !semestre || !creditos) {
+      return res.status(400).json({ error: 'Nombre, semestre y créditos son obligatorios' });
+    }
+
+    const resultado = await pool.query(
+      'INSERT INTO materia (nombre, semestre, creditos) VALUES ($1, $2, $3) RETURNING *',
+      [nombre, semestre, creditos]
+    );
+
+    res.status(201).json({
+      mensaje: 'Materia insertada correctamente',
+      materia: resultado.rows[0]
+    });
+  } catch (error) {
+    console.error('Error al insertar materia:', error);
+    res.status(500).json({ error: 'Error al insertar la materia' });
+  }
+});
+
 
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000');
