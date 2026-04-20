@@ -50,12 +50,10 @@ app.get('/materias', async (req, res) => {
 });
 
 
-// Parte 3: Insertar una nueva materia (POST)
 app.post('/materias', async (req, res) => {
   try {
     const { nombre, semestre, creditos } = req.body;
 
-    // Parte 8: Validación de campos
     if (!nombre || !semestre || !creditos) {
       return res.status(400).json({ error: 'Nombre, semestre y créditos son obligatorios' });
     }
